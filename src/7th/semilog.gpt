@@ -1,0 +1,48 @@
+# strの中でtargetよりも前の部分文字列を返す
+substr_str_before(str, target)=substr(str, 1, strstrt(str,target)-1)
+# strの中でtargetよりも後の部分文字列を返す
+substr_str_after(str, target)=\
+     substr(str, strstrt(str,target)+strlen(target), strlen(str))
+# 再帰表現を利用して、strのindexより後の文字列のtargetをsubstに全て置換する
+strsubst_sub(str, index, target, subst)=\
+     strstrt(str[index:],target)==0 ? str :\
+     strsubst_sub( str[:index-1] . substr_str_before(str[index:],target) . \
+     subst . substr_str_after(str[index:],target),\
+     index+strstrt(str[index:],target)+strlen(subst)-strlen(target),\
+     target, subst)
+
+# strの中のtargetをsubstに置換する
+strsubst(str, target, subst)=strsubst_sub(str,1,target,subst)
+
+set term postscript enhanced eps
+set xlabel "{/Symbol \326}}{/Times-Italic mn}"
+set ylabel "log_{10}( time [s] )"
+set key left top
+set key spacing 1.5
+a = 1.0
+b = 5.9
+f(x) = a*x + b
+fit f(x) "align_rec_time_randomlength_log.dat" u 1:2 via a,b
+set out "align_rec_time_randomlength_semilog.eps"
+plot "align_rec_time_randomlength_log.dat" u 1:2 w p title strsubst("align_rec", "_", "\\_"),\
+     f(x) w l lt 1 title sprintf("%e*{/Symbol \326}{/Times-Italic mn} + %f",a,b)
+set out
+fit f(x) "compare_align_log.dat" u 1:2 via a,b
+set out "compare_align_semilog.eps"
+plot "compare_align_log.dat" u 1:2 w p title strsubst("align_rec", "_", "\\_"),\
+     f(x) w l lt 1 title sprintf("%e*{/Symbol \326}{/Times-Italic mn} + %f",a,b)
+set out
+fit f(x) "align_rec_cal_randomlength_log.dat" u 1:2 via a,b
+set xlabel "{/Symbol \326}{/Times-Italic mn}"
+set ylabel "log_{10}( computational complexity )"
+set out "align_rec_cal_randomlength_semilog.eps"
+plot "align_rec_cal_randomlength_log.dat"u 1:2 w p title strsubst("align_rec", "_", "\\_"),\
+     f(x) w l lt 1 title sprintf("%e*{/Symbol \326}{/Times-Italic mn} + %f",a,b)
+set out
+fit f(x) "align_rec_cal_log.dat" u 1:2 via a,b
+set xlabel "length of the base sequence ({/Times-Italic n})"
+set out "align_rec_cal_semilog.eps"
+plot "align_rec_cal_log.dat"u 1:2 w p title strsubst("align_rec", "_", "\\_"),\
+     f(x) w l lt 1 title sprintf("%e*{/Times-Italic n} + %f",a,b)
+set out
+set term x11

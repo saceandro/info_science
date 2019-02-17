@@ -1,0 +1,30 @@
+# strの中でtargetよりも前の部分文字列を返す
+substr_str_before(str, target)=substr(str, 1, strstrt(str,target)-1)
+# strの中でtargetよりも後の部分文字列を返す
+substr_str_after(str, target)=\
+     substr(str, strstrt(str,target)+strlen(target), strlen(str))
+# 再帰表現を利用して、strのindexより後の文字列のtargetをsubstに全て置換する
+strsubst_sub(str, index, target, subst)=\
+     strstrt(str[index:],target)==0 ? str :\
+     strsubst_sub( str[:index-1] . substr_str_before(str[index:],target) . \
+     subst . substr_str_after(str[index:],target),\
+     index+strstrt(str[index:],target)+strlen(subst)-strlen(target),\
+     target, subst)
+
+# strの中のtargetをsubstに置換する
+strsubst(str, target, subst)=strsubst_sub(str,1,target,subst)
+
+set term postscript enhanced eps
+set xlabel "length of the base sequence ({/Times-Italic n})"
+set ylabel "time [s]"
+set logscale y
+set out "align_rec_time_sameseq.eps"
+a = 1.19515e-6
+b = 3.0
+c = 0.0010
+f(x) = a * b**x + c
+fit f(x) "align_rec_time_sameseq_2.dat" u 1:2 via a,b,c
+plot f(x) w l lt 1 title sprintf("%e * %f^{/Times-Italic n} + %f",a,b,c),\
+     "align_rec_time_sameseq.dat" u 1:2 w p pt 1 title strsubst("align_rec", "_", "\\_")
+set out
+set term x11

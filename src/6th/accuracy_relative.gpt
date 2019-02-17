@@ -1,0 +1,11 @@
+set term postscript enhanced eps
+set out "accuracy_relative.eps"
+set logscale
+set title "Accuracy of number integral"
+set xlabel "n"
+set ylabel "abs(1 - number_integral/({/Symbol p}/4))"
+plot "accuracy_relative.dat" u 1:2 w l title "trapezoid",\
+     "accuracy_relative.dat" u 1:3 w l title "simpson",\
+     "accuracy_relative.dat" u 1:4 w l title "montecarlo"
+set out
+set term x11

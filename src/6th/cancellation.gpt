@@ -1,0 +1,11 @@
+set terminal postscript enhanced eps
+set out "cancellation.eps"
+set logscale
+set xrange [1:1e-15]
+set xlabel "h"
+set ylabel "error"
+set title "Cancellation"
+plot "./cancellation.dat" u 1:2 w l notitle,\
+     "./cancellation.dat" u 1:2 w p notitle
+set out
+set term x11

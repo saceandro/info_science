@@ -1,0 +1,27 @@
+# strの中でtargetよりも前の部分文字列を返す
+substr_str_before(str, target)=substr(str, 1, strstrt(str,target)-1)
+# strの中でtargetよりも後の部分文字列を返す
+substr_str_after(str, target)=\
+     substr(str, strstrt(str,target)+strlen(target), strlen(str))
+# 再帰表現を利用して、strのindexより後の文字列のtargetをsubstに全て置換する
+strsubst_sub(str, index, target, subst)=\
+     strstrt(str[index:],target)==0 ? str :\
+     strsubst_sub( str[:index-1] . substr_str_before(str[index:],target) . \
+     subst . substr_str_after(str[index:],target),\
+     index+strstrt(str[index:],target)+strlen(subst)-strlen(target),\
+     target, subst)
+
+# strの中のtargetをsubstに置換する
+strsubst(str, target, subst)=strsubst_sub(str,1,target,subst)
+
+set term postscript enhanced eps
+set xlabel "{/Symbol \326}{/Times-Italic mn}"
+set ylabel "time [s]"
+set logscale y
+set key left top
+set key spacing 1.5
+set out "align_rec_time_randomlength_log.eps"
+plot "align_rec_time_randomlength.dat" u 3:4 w p title strsubst("align_rec", "_", "\\_"),\
+     7.290730e-7 * 5.772436**x w l lt 1 title "7.290730e-7 * 5.772436^{{/Symbol \326}{/Times-Italic mn}}"
+set out
+set term x11

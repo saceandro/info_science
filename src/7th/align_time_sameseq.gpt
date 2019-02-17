@@ -1,0 +1,14 @@
+set term postscript enhanced eps
+set xlabel "length of the base sequence"
+set ylabel "time [s]"
+set logscale
+set out "align_time_sameseq.eps"
+a = 1.0
+b = 3.0
+c = 1.0
+f(x) = a * x**b + c
+fit f(x) "align_time_sameseq_2.dat" u 1:2 via a,b,c
+plot f(x) w l lt 1 title sprintf("%e * {/Times-Italic n}^{%f} + %f",a,b,c),\
+     "align_time_sameseq.dat" u 1:2 w p pt 1 title "align"
+set out
+set term x11
